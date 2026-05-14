@@ -9,6 +9,7 @@ import {
   Users,
   Award,
   BarChart3,
+  PiggyBank,
 } from "lucide-react";
 
 export default function Landing() {
@@ -16,7 +17,6 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
-      {/* Background blobs */}
       <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full bg-[radial-gradient(circle,#c8d5a0_0%,transparent_70%)] opacity-40 z-0 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,#b5c48a_0%,transparent_70%)] opacity-30 z-0 pointer-events-none" />
 
@@ -29,11 +29,14 @@ export default function Landing() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Link href="/dashboard">
-                  <span className="hidden md:block text-primary font-medium hover:opacity-60 transition-opacity cursor-pointer">Página Principal</span>
+                <Link href="/graficas">
+                  <span className="hidden md:block text-primary font-medium hover:opacity-60 transition-opacity cursor-pointer text-sm">Gráficas</span>
+                </Link>
+                <Link href="/alcancia">
+                  <span className="hidden md:block text-primary font-medium hover:opacity-60 transition-opacity cursor-pointer text-sm">Alcancía</span>
                 </Link>
                 <Link href="/biblioteca">
-                  <span className="hidden md:block text-primary font-medium hover:opacity-60 transition-opacity cursor-pointer">Biblioteca</span>
+                  <span className="hidden md:block text-primary font-medium hover:opacity-60 transition-opacity cursor-pointer text-sm">Biblioteca</span>
                 </Link>
                 <span className="hidden md:block text-sm text-muted-foreground font-medium">
                   Hola, {user.name.split(" ")[0]}
@@ -75,9 +78,9 @@ export default function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 mt-10">
             {user ? (
-              <Link href="/dashboard">
+              <Link href="/graficas">
                 <span className="flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-85 transition-opacity cursor-pointer shadow-md">
-                  Ir al Dashboard <ChevronRight className="w-5 h-5" />
+                  Ver mis gráficas <ChevronRight className="w-5 h-5" />
                 </span>
               </Link>
             ) : (
@@ -120,9 +123,14 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                icon: TrendingUp,
-                title: "Seguimiento financiero",
-                desc: "Visualiza tus ingresos, gastos y ahorros en tiempo real con paneles intuitivos.",
+                icon: BarChart3,
+                title: "Gráficas financieras",
+                desc: "Visualiza tus ingresos y gastos en tiempo real. Descubre cuánto puedes ahorrar de verdad.",
+              },
+              {
+                icon: PiggyBank,
+                title: "Alcancía virtual",
+                desc: "Crea metas de ahorro personalizadas y lleva un registro de tu progreso.",
               },
               {
                 icon: BookOpen,
@@ -130,24 +138,19 @@ export default function Landing() {
                 desc: "Accede a cientos de artículos, guías y herramientas sobre finanzas personales.",
               },
               {
-                icon: Shield,
-                title: "Planificación segura",
-                desc: "Crea planes financieros personalizados con objetivos claros y alcanzables.",
+                icon: TrendingUp,
+                title: "Seguimiento inteligente",
+                desc: "El sistema estima automáticamente un margen para gastos personales que no siempre contamos.",
               },
               {
-                icon: BarChart3,
-                title: "Análisis inteligente",
-                desc: "Obtén insights sobre tus hábitos de gasto y oportunidades de ahorro.",
+                icon: Shield,
+                title: "Planificación segura",
+                desc: "Crea planes financieros con objetivos claros y alcanzables basados en tus números reales.",
               },
               {
                 icon: Star,
                 title: "Consejos personalizados",
-                desc: "Recibe recomendaciones adaptadas a tu situación financiera única.",
-              },
-              {
-                icon: Award,
-                title: "Metas y logros",
-                desc: "Establece objetivos financieros y celebra cada paso que das hacia ellos.",
+                desc: "Accede a contenido educativo adaptado a distintos niveles y situaciones financieras.",
               },
             ].map(({ icon: Icon, title, desc }) => (
               <div
