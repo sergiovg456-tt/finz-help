@@ -16,7 +16,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   if (user) {
-    navigate("/dashboard");
+    navigate("/graficas");
     return null;
   }
 
@@ -34,7 +34,7 @@ export default function Register() {
     setLoading(false);
 
     if (result.success) {
-      navigate("/dashboard");
+      navigate("/graficas");
     } else {
       setError(result.error ?? "Error al registrarse.");
     }

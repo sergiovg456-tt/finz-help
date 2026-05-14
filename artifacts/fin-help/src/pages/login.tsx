@@ -13,7 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   if (user) {
-    navigate("/dashboard");
+    navigate("/graficas");
     return null;
   }
 
@@ -24,7 +24,7 @@ export default function Login() {
     const result = login(email, password);
     setLoading(false);
     if (result.success) {
-      navigate("/dashboard");
+      navigate("/graficas");
     } else {
       setError(result.error ?? "Error al iniciar sesión.");
     }
