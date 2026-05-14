@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import Sidebar from "@/components/sidebar";
@@ -45,11 +45,45 @@ function fmt(n: number) {
   return n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function loadData(userId: string): { income: Row[]; expenses: Row[] } {
+  try {
+    const raw = localStorage.getItem(`fin_help_graficas_${userId}`);
+    if (!raw) return { income: DEFAULT_INCOME, expenses: DEFAULT_EXPENSES };
+    const parsed = JSON.parse(raw);
+    if (parsed.income?.length) nextId = Math.max(nextId, ...parsed.income.map((r: Row) => r.id + 1));
+    if (parsed.expenses?.length) nextId = Math.max(nextId, ...parsed.expenses.map((r: Row) => r.id + 1));
+    return {
+      income: parsed.income?.length ? parsed.income : DEFAULT_INCOME,
+      expenses: parsed.expenses?.length ? parsed.expenses : DEFAULT_EXPENSES,
+    };
+  } catch {
+    return { income: DEFAULT_INCOME, expenses: DEFAULT_EXPENSES };
+  }
+}
+
+function saveData(userId: string, income: Row[], expenses: Row[]) {
+  localStorage.setItem(`fin_help_graficas_${userId}`, JSON.stringify({ income, expenses }));
+}
+
 export default function Graficas() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const [incomeRows, setIncomeRows] = useState<Row[]>(DEFAULT_INCOME);
   const [expenseRows, setExpenseRows] = useState<Row[]>(DEFAULT_EXPENSES);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const { income, expenses } = loadData(user.id);
+    setIncomeRows(income);
+    setExpenseRows(expenses);
+    setLoaded(true);
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user || !loaded) return;
+    saveData(user.id, incomeRows, expenseRows);
+  }, [incomeRows, expenseRows, user?.id, loaded]);
 
   if (!user) { navigate("/login"); return null; }
 
