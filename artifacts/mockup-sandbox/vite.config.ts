@@ -5,27 +5,10 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+// PORT and BASE_PATH are injected by Replit workflows.
+// Fall back to safe defaults so CI/Vercel builds never throw.
+const port = Number(process.env.PORT ?? "8081");
+const basePath = process.env.BASE_PATH ?? "/__mockup";
 
 export default defineConfig({
   base: basePath,
