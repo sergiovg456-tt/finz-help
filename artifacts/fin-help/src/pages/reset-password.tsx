@@ -14,18 +14,16 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // If after loading there's no recovery session, the link may be expired/invalid
+  // If after loading there's no recovery session, the link may be expired/invalid.
+  // Always return a cleanup so TypeScript sees consistent return types.
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (!isLoading && !isRecoverySession) {
-      // Give Supabase a moment to process the hash token from the URL
-      const timer = setTimeout(() => {
-        if (!isRecoverySession) {
-          // Still no recovery session — link may be invalid, but don't redirect
-          // so the user can see an explanation rather than a blank page
-        }
-      }, 1500);
-      return () => clearTimeout(timer);
+      // Give Supabase a moment to process the hash token from the URL.
+      // No redirect — the UI shows the "expired link" message instead.
+      timer = setTimeout(() => { /* no-op */ }, 1500);
     }
+    return () => { if (timer !== undefined) clearTimeout(timer); };
   }, [isLoading, isRecoverySession]);
 
   async function handleSubmit(e: FormEvent) {
