@@ -1,0 +1,53 @@
+Quiero corregir completamente la autenticación con Supabase sin romper ninguna funcionalidad ni modificar el diseño de la aplicación.
+
+Realiza todos estos cambios:
+
+1. Elimina completamente la confirmación obligatoria por correo electrónico.
+   - Los usuarios deben poder registrarse e iniciar sesión inmediatamente.
+   - No quiero que Supabase envíe correos de confirmación al registrarse.
+
+2. Mantén únicamente la función "¿Olvidaste tu contraseña?" para enviar correos de recuperación.
+
+3. Corrige completamente el flujo de recuperación de contraseña.
+   - Actualmente el enlace llega a:
+     https://finze-help-fin-help.vercel.app/update-password
+     pero devuelve 404.
+   - Crea la ruta /update-password.
+   - Agrégala al router.
+   - Haz que funcione correctamente tanto en desarrollo como en Vercel.
+
+4. En la página /update-password:
+   - Detecta automáticamente la sesión de recuperación de Supabase.
+   - Muestra:
+       - Nueva contraseña
+       - Confirmar contraseña
+   - Cambia la contraseña utilizando:
+     await supabase.auth.updateUser({ password: newPassword })
+   - Si todo sale bien redirige al Login mostrando:
+     "Contraseña actualizada correctamente."
+
+5. Configura correctamente:
+   redirectTo:
+   https://finze-help-fin-help.vercel.app/update-password
+
+6. Asegúrate de que nunca vuelva a usar localhost para recuperación de contraseña.
+
+7. Elimina todos los usuarios actualmente registrados en Supabase para empezar desde cero.
+   Si no es posible eliminarlos mediante código, indícame el procedimiento o genera el script necesario.
+
+8. Revisa toda la configuración de Supabase Auth para asegurarte de que:
+   - Registro funciona.
+   - Inicio de sesión funciona.
+   - Cerrar sesión funciona.
+   - Recuperar contraseña funciona.
+   - Mantener sesión funciona.
+   - Producción en Vercel funciona.
+
+9. No cambies el diseño visual de la aplicación.
+
+10. No elimines funcionalidades existentes.
+
+11. Al finalizar verifica que el flujo completo funcione:
+   Registro → Login → Cerrar sesión → Olvidé mi contraseña → Cambiar contraseña → Login nuevamente.
+
+Finalmente indícame exactamente qué archivos modificaste y confirma que el sistema quedó listo para producción.
