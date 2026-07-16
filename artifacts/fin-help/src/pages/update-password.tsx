@@ -1,10 +1,8 @@
 import { useState, FormEvent, useEffect } from "react";
-import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { Eye, EyeOff, AlertCircle, CheckCircle2, Lock } from "lucide-react";
 
 export default function UpdatePassword() {
-  const [, navigate] = useLocation();
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,16 +12,14 @@ export default function UpdatePassword() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Supabase embeds the recovery token in the URL hash.
-  // onAuthStateChange fires PASSWORD_RECOVERY once the SDK exchanges the token.
   useEffect(() => {
+    // Supabase puts the recovery token in the URL hash; onAuthStateChange fires
+    // PASSWORD_RECOVERY once the SDK has exchanged it for a session.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-      }
+      if (event === "PASSWORD_RECOVERY") setReady(true);
     });
 
-    // Also check if a session already exists (e.g. page was refreshed)
+    // If the page is refreshed, check for an existing session
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) setReady(true);
     });
@@ -49,8 +45,14 @@ export default function UpdatePassword() {
       return;
     }
 
+    // Sign out so the user starts a fresh session on login
+    await supabase.auth.signOut();
     setSuccess(true);
-    setTimeout(() => navigate("/graficas"), 2500);
+
+    // Redirect to login with success message after a short pause
+    setTimeout(() => {
+      window.location.href = "/login?updated=1";
+    }, 1500);
   }
 
   const passwordStrength =
@@ -88,10 +90,10 @@ export default function UpdatePassword() {
                   <CheckCircle2 className="w-8 h-8 text-green-600" />
                 </div>
                 <h1 className="font-serif text-2xl font-bold text-primary mb-2">
-                  Contraseña actualizada
+                  ¡Contraseña actualizada!
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Tu contraseña fue cambiada exitosamente. Redirigiendo...
+                  Redirigiendo al inicio de sesión...
                 </p>
               </div>
 

@@ -1,34 +1,47 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
-  const { login, user } = useAuth();
+  const { login, user, isLoading } = useAuth();
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [passwordUpdated, setPasswordUpdated] = useState(false);
 
-  if (user) {
-    navigate("/graficas");
-    return null;
-  }
+  // Read ?updated=1 from the URL to show success message
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("updated") === "1") {
+      setPasswordUpdated(true);
+      // Clean the URL without reloading
+      window.history.replaceState({}, "", "/login");
+    }
+  }, []);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!isLoading && user) navigate("/graficas");
+  }, [user, isLoading]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSubmitting(true);
     const result = await login(email, password);
-    setLoading(false);
+    setSubmitting(false);
     if (result.success) {
       navigate("/graficas");
     } else {
       setError(result.error ?? "Error al iniciar sesión.");
     }
   }
+
+  if (isLoading) return null;
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
@@ -53,6 +66,13 @@ export default function Login() {
               <h1 className="font-serif text-3xl font-bold text-primary">Bienvenido de nuevo</h1>
               <p className="mt-2 text-sm text-muted-foreground">Inicia sesión en tu cuenta</p>
             </div>
+
+            {passwordUpdated && (
+              <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-2xl px-4 py-3 mb-6 text-sm">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                Contraseña actualizada correctamente.
+              </div>
+            )}
 
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3 mb-6 text-sm">
@@ -112,10 +132,10 @@ export default function Login() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={submitting}
                 className="mt-2 w-full py-3 rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-85 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+                {submitting ? "Iniciando sesión..." : "Iniciar sesión"}
               </button>
             </form>
 
