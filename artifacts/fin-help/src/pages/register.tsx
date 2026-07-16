@@ -20,7 +20,7 @@ export default function Register() {
     return null;
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
 
@@ -30,7 +30,7 @@ export default function Register() {
     }
 
     setLoading(true);
-    const result = register(name, email, password);
+    const result = await register(name, email, password);
     setLoading(false);
 
     if (result.success) {
@@ -40,13 +40,14 @@ export default function Register() {
     }
   }
 
-  const passwordStrength = password.length === 0
-    ? null
-    : password.length < 6
-    ? "débil"
-    : password.length < 10
-    ? "media"
-    : "fuerte";
+  const passwordStrength =
+    password.length === 0
+      ? null
+      : password.length < 6
+      ? "débil"
+      : password.length < 10
+      ? "media"
+      : "fuerte";
 
   const strengthColor =
     passwordStrength === "débil"
@@ -61,7 +62,6 @@ export default function Register() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,#b5c48a_0%,transparent_70%)] opacity-30 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Navbar */}
         <nav className="m-5 rounded-full bg-white/50 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-sm">
           <Link href="/">
             <span className="font-serif italic text-primary text-xl font-bold cursor-pointer">Fin-help</span>
@@ -73,7 +73,6 @@ export default function Register() {
           </Link>
         </nav>
 
-        {/* Form */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-md bg-white/70 backdrop-blur-md rounded-3xl shadow-sm p-8">
             <div className="mb-8 text-center">
@@ -100,6 +99,7 @@ export default function Register() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Tu nombre"
                   required
+                  autoComplete="name"
                   className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 />
               </div>
@@ -115,6 +115,7 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@correo.com"
                   required
+                  autoComplete="email"
                   className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 />
               </div>
@@ -132,6 +133,7 @@ export default function Register() {
                     placeholder="Mínimo 6 caracteres"
                     required
                     minLength={6}
+                    autoComplete="new-password"
                     className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm pr-12"
                   />
                   <button
@@ -161,6 +163,7 @@ export default function Register() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repite tu contraseña"
                     required
+                    autoComplete="new-password"
                     className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm pr-12"
                   />
                   <button
@@ -172,11 +175,19 @@ export default function Register() {
                   </button>
                 </div>
                 {confirmPassword && (
-                  <p className={`text-xs font-medium flex items-center gap-1 ${password === confirmPassword ? "text-green-600" : "text-red-500"}`}>
+                  <p
+                    className={`text-xs font-medium flex items-center gap-1 ${
+                      password === confirmPassword ? "text-green-600" : "text-red-500"
+                    }`}
+                  >
                     {password === confirmPassword ? (
-                      <><CheckCircle2 className="w-3 h-3" /> Las contraseñas coinciden</>
+                      <>
+                        <CheckCircle2 className="w-3 h-3" /> Las contraseñas coinciden
+                      </>
                     ) : (
-                      <><AlertCircle className="w-3 h-3" /> Las contraseñas no coinciden</>
+                      <>
+                        <AlertCircle className="w-3 h-3" /> Las contraseñas no coinciden
+                      </>
                     )}
                   </p>
                 )}

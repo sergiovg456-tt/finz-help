@@ -1,54 +1,32 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  password: string;
   createdAt: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  register: (name: string, email: string, password: string) => { success: boolean; error?: string };
-  login: (email: string, password: string) => { success: boolean; error?: string };
-  logout: () => void;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const USERS_KEY = "fin_help_users";
-const SESSION_KEY = "fin_help_session";
-
-function getStoredUsers(): User[] {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsers(users: User[]) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-function getStoredSession(): User | null {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveSession(user: User | null) {
-  if (user) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(SESSION_KEY);
-  }
+function toUser(su: SupabaseUser): User {
+  return {
+    id: su.id,
+    name: (su.user_metadata?.name as string) || su.email?.split("@")[0] || "Usuario",
+    email: su.email ?? "",
+    createdAt: su.created_at,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -56,62 +34,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const session = getStoredSession();
-    setUser(session);
-    setIsLoading(false);
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ? toUser(data.session.user) : null);
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? toUser(session.user) : null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  function register(name: string, email: string, password: string): { success: boolean; error?: string } {
+  async function register(name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> {
     if (!name.trim()) return { success: false, error: "El nombre es obligatorio." };
     if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
-    if (!password.trim()) return { success: false, error: "La contraseña es obligatoria." };
     if (password.length < 6) return { success: false, error: "La contraseña debe tener al menos 6 caracteres." };
 
-    const users = getStoredUsers();
-    const existing = users.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
-    if (existing) {
-      return { success: false, error: "Ya existe una cuenta con ese correo." };
-    }
-
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
+    const { error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
       password,
-      createdAt: new Date().toISOString(),
-    };
+      options: { data: { name: name.trim() } },
+    });
 
-    saveUsers([...users, newUser]);
-    saveSession(newUser);
-    setUser(newUser);
-    return { success: true };
-  }
-
-  function login(email: string, password: string): { success: boolean; error?: string } {
-    if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
-    if (!password.trim()) return { success: false, error: "La contraseña es obligatoria." };
-
-    const users = getStoredUsers();
-    const found = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase().trim() && u.password === password
-    );
-
-    if (!found) {
-      return { success: false, error: "Correo o contraseña incorrectos." };
+    if (error) {
+      if (error.message.includes("already registered") || error.message.includes("already been registered")) {
+        return { success: false, error: "Ya existe una cuenta con ese correo." };
+      }
+      return { success: false, error: error.message };
     }
-
-    saveSession(found);
-    setUser(found);
     return { success: true };
   }
 
-  function logout() {
-    saveSession(null);
+  async function login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
+    if (!password) return { success: false, error: "La contraseña es obligatoria." };
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error) {
+      if (error.message.includes("Invalid login")) {
+        return { success: false, error: "Correo o contraseña incorrectos." };
+      }
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  }
+
+  async function logout(): Promise<void> {
+    await supabase.auth.signOut();
     setUser(null);
   }
 
+  async function resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
+    if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
+
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+      redirectTo,
+    });
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, register, login, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

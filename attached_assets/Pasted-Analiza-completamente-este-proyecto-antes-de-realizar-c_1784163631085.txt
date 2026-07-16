@@ -1,0 +1,129 @@
+Analiza completamente este proyecto antes de realizar cambios.
+
+Objetivo:
+Agregar un sistema completo de autenticación con Supabase a la aplicación existente SIN romper ninguna funcionalidad ni modificar el diseño actual.
+
+REQUISITOS IMPORTANTES
+
+- No elimines componentes existentes.
+- No cambies el diseño visual.
+- No cambies colores, tipografías ni estilos.
+- No cambies rutas existentes salvo que sea estrictamente necesario.
+- Mantén todas las funcionalidades actuales.
+- Si necesitas crear archivos nuevos, créalos.
+- Reutiliza la estructura del proyecto.
+
+TECNOLOGÍAS
+
+Detecta automáticamente la estructura del proyecto (React + Vite, TypeScript, React Router o Wouter, etc.) y adapta la implementación.
+
+INSTALAR
+
+Instala únicamente las dependencias necesarias para Supabase.
+
+CONFIGURACIÓN
+
+Crea toda la configuración necesaria para Supabase utilizando variables de entorno.
+
+Las variables deben ser:
+
+VITE_SUPABASE_URL
+
+VITE_SUPABASE_ANON_KEY
+
+NO escribas claves directamente en el código.
+
+AUTENTICACIÓN
+
+Implementa completamente:
+
+• Registro con correo y contraseña.
+• Inicio de sesión.
+• Cierre de sesión.
+• Recuperación de contraseña mediante email.
+• Persistencia de sesión.
+• Mantener la sesión al refrescar la página.
+• Detectar automáticamente si el usuario está autenticado.
+
+PROTECCIÓN
+
+Crea un sistema para proteger rutas privadas.
+
+Si un usuario no ha iniciado sesión debe ser enviado a la pantalla de Login.
+
+Si ya inició sesión debe acceder normalmente.
+
+INTERFAZ
+
+Si el proyecto ya tiene Login o Registro, reutilízalos.
+
+Si no existen:
+
+Crear páginas modernas para:
+
+- Iniciar sesión
+- Registrarse
+- Recuperar contraseña
+
+Manteniendo exactamente el estilo visual del proyecto.
+
+BASE DE DATOS
+
+Configura Supabase para almacenar usuarios usando Supabase Auth.
+
+Después del registro el usuario debe poder iniciar sesión desde cualquier dispositivo usando el mismo correo y contraseña.
+
+PERFIL
+
+Después del registro crea automáticamente un perfil del usuario en una tabla llamada "profiles" con:
+
+id
+email
+created_at
+
+Si la tabla no existe, genera el script SQL necesario en un archivo llamado supabase.sql.
+
+CÓDIGO
+
+Organiza el código correctamente.
+
+Crear:
+
+- lib/supabase
+- hooks de autenticación
+- contexto de autenticación
+- componentes reutilizables
+- rutas protegidas
+
+Utiliza buenas prácticas y TypeScript si el proyecto ya lo usa.
+
+VARIABLES DE ENTORNO
+
+Si es necesario crea:
+
+.env.example
+
+con:
+
+VITE_SUPABASE_URL=
+
+VITE_SUPABASE_ANON_KEY=
+
+DEPLOY
+
+Asegúrate de que el proyecto siga siendo compatible con Vercel.
+
+No utilices APIs incompatibles con Vercel.
+
+RESULTADO
+
+Al finalizar, entrega un resumen indicando:
+
+1. Archivos creados.
+2. Archivos modificados.
+3. Dependencias instaladas.
+4. Variables de entorno necesarias.
+5. Script SQL si aplica.
+6. Pasos finales para conectar Supabase.
+
+No realices cambios destructivos. Si detectas una posible incompatibilidad, explica la solución antes de modificar esa parte del proyecto.

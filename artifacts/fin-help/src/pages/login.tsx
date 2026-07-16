@@ -17,11 +17,11 @@ export default function Login() {
     return null;
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const result = login(email, password);
+    const result = await login(email, password);
     setLoading(false);
     if (result.success) {
       navigate("/graficas");
@@ -36,7 +36,6 @@ export default function Login() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,#b5c48a_0%,transparent_70%)] opacity-30 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Navbar */}
         <nav className="m-5 rounded-full bg-white/50 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-sm">
           <Link href="/">
             <span className="font-serif italic text-primary text-xl font-bold cursor-pointer">Fin-help</span>
@@ -48,7 +47,6 @@ export default function Login() {
           </Link>
         </nav>
 
-        {/* Form */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-md bg-white/70 backdrop-blur-md rounded-3xl shadow-sm p-8">
             <div className="mb-8 text-center">
@@ -75,14 +73,22 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@correo.com"
                   required
+                  autoComplete="email"
                   className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-primary" htmlFor="password">
-                  Contraseña
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium text-primary" htmlFor="password">
+                    Contraseña
+                  </label>
+                  <Link href="/forgot-password">
+                    <span className="text-xs text-primary hover:underline cursor-pointer">
+                      ¿Olvidaste tu contraseña?
+                    </span>
+                  </Link>
+                </div>
                 <div className="relative">
                   <input
                     id="password"
@@ -91,6 +97,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Tu contraseña"
                     required
+                    autoComplete="current-password"
                     className="w-full px-4 py-3 rounded-2xl border border-input bg-white/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm pr-12"
                   />
                   <button

@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import ForgotPassword from "@/pages/forgot-password";
 import Graficas from "@/pages/graficas";
 import Alcancia from "@/pages/alcancia";
 import Biblioteca from "@/pages/biblioteca";
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/graficas" component={Graficas} />
       <Route path="/alcancia" component={Alcancia} />
       <Route path="/biblioteca" component={Biblioteca} />
