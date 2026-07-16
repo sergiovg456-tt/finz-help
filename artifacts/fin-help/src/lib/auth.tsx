@@ -125,12 +125,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
     if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
 
-    // Use the current origin so it works in both dev and production
-    const redirectTo = `${window.location.origin}/reset-password`;
-
     const { error } = await supabase.auth.resetPasswordForEmail(
       email.trim().toLowerCase(),
-      { redirectTo }
+      { redirectTo: "https://finze-help-fin-help.vercel.app/update-password" }
     );
 
     if (error) return { success: false, error: error.message };

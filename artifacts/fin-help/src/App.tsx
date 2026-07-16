@@ -8,6 +8,7 @@ import Login from "@/pages/login";
 import Register from "@/pages/register";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
+import UpdatePassword from "@/pages/update-password";
 import Graficas from "@/pages/graficas";
 import Alcancia from "@/pages/alcancia";
 import Biblioteca from "@/pages/biblioteca";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/reset-password" component={ResetPassword} />
+      <Route path="/update-password" component={UpdatePassword} />
       <Route path="/graficas" component={Graficas} />
       <Route path="/alcancia" component={Alcancia} />
       <Route path="/biblioteca" component={Biblioteca} />

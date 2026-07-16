@@ -35,7 +35,7 @@ function fmt(n: number) {
 }
 
 export default function Alcancia() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [, navigate] = useLocation();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -44,14 +44,14 @@ export default function Alcancia() {
   const [newEmoji, setNewEmoji] = useState("🐷");
   const [depositAmounts, setDepositAmounts] = useState<Record<string, string>>({});
 
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && !user) navigate("/login");
+  }, [user, isLoading]);
 
   useEffect(() => {
+    if (!user) return;
     setGoals(loadGoals(user.id));
-  }, [user.id]);
+  }, [user?.id]);
 
   function persist(updated: Goal[]) {
     setGoals(updated);

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/sidebar";
 import { BookOpen, Search, Clock, Tag, ChevronRight } from "lucide-react";
 
@@ -25,12 +25,16 @@ const levelColors: Record<string, string> = {
 };
 
 export default function Biblioteca() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todas");
 
-  if (!user) { navigate("/login"); return null; }
+  useEffect(() => {
+    if (!isLoading && !user) navigate("/login");
+  }, [user, isLoading]);
+
+  if (!user) return null;
 
   const filtered = recursos.filter((r) => {
     const matchSearch =

@@ -66,11 +66,15 @@ function saveData(userId: string, income: Row[], expenses: Row[]) {
 }
 
 export default function Graficas() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [, navigate] = useLocation();
   const [incomeRows, setIncomeRows] = useState<Row[]>(DEFAULT_INCOME);
   const [expenseRows, setExpenseRows] = useState<Row[]>(DEFAULT_EXPENSES);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && !user) navigate("/login");
+  }, [user, isLoading]);
 
   useEffect(() => {
     if (!user) return;
@@ -85,7 +89,7 @@ export default function Graficas() {
     saveData(user.id, incomeRows, expenseRows);
   }, [incomeRows, expenseRows, user?.id, loaded]);
 
-  if (!user) { navigate("/login"); return null; }
+  if (!user) return null;
 
   const totalIncome = incomeRows.reduce((s, r) => s + parseMoney(r.amount), 0);
   const totalExpenses = expenseRows.reduce((s, r) => s + parseMoney(r.amount), 0);
