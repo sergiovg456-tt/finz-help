@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { error } = await supabase.auth.resetPasswordForEmail(
       email.trim().toLowerCase(),
-      { redirectTo: "https://finze-help-fin-help.vercel.app/update-password" }
+      { redirectTo: "https://finz-help.com/update-password" }
     );
 
     if (error) return { success: false, error: translateError(error.message) };
