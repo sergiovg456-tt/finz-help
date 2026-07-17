@@ -12,6 +12,7 @@ import UpdatePassword from "@/pages/update-password";
 import Graficas from "@/pages/graficas";
 import Alcancia from "@/pages/alcancia";
 import Biblioteca from "@/pages/biblioteca";
+import Articulo from "@/pages/articulo";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/update-password" component={UpdatePassword} />
       <Route path="/graficas" component={Graficas} />
       <Route path="/alcancia" component={Alcancia} />
+      <Route path="/biblioteca/:id" component={Articulo} />
       <Route path="/biblioteca" component={Biblioteca} />
       <Route component={NotFound} />
     </Switch>

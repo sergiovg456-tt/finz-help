@@ -1,10 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-
-const SUPABASE_MISSING_ERROR =
-  "La aplicación no está configurada correctamente. " +
-  "Faltan las variables de entorno VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en Vercel.";
+import { supabase } from "@/lib/supabase";
 
 export interface User {
   id: string;
@@ -33,6 +29,28 @@ function toUser(su: SupabaseUser): User {
     email: su.email ?? "",
     createdAt: su.created_at,
   };
+}
+
+function translateError(message: string): string {
+  if (message.includes("Invalid login") || message.includes("invalid_credentials")) {
+    return "Correo o contraseña incorrectos.";
+  }
+  if (message.includes("Email not confirmed")) {
+    return "Debes confirmar tu correo antes de iniciar sesión.";
+  }
+  if (message.includes("already registered") || message.includes("already been registered") || message.includes("already exists")) {
+    return "Ya existe una cuenta con ese correo.";
+  }
+  if (message.includes("Password should be at least")) {
+    return "La contraseña debe tener al menos 6 caracteres.";
+  }
+  if (message.includes("Unable to validate email address")) {
+    return "El correo electrónico no es válido.";
+  }
+  if (message.includes("Email rate limit exceeded")) {
+    return "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
+  }
+  return message;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -64,7 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> {
-    if (!isSupabaseConfigured) return { success: false, error: SUPABASE_MISSING_ERROR };
     if (!name.trim()) return { success: false, error: "El nombre es obligatorio." };
     if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
     if (password.length < 6) return { success: false, error: "La contraseña debe tener al menos 6 caracteres." };
@@ -75,25 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { data: { name: name.trim() } },
     });
 
-    if (error) {
-      if (
-        error.message.includes("already registered") ||
-        error.message.includes("already been registered") ||
-        error.message.includes("already exists")
-      ) {
-        return { success: false, error: "Ya existe una cuenta con ese correo." };
-      }
-      return { success: false, error: error.message };
-    }
-
-    // If email confirmation is enabled but user already registered, Supabase returns
-    // a user with no session. We treat it as success and let them log in.
-    if (data.user && !data.session) {
-      // Email confirmation is ON — user needs to confirm. Still return success
-      // so they can see a message, but they won't be auto-logged-in.
-      return { success: true };
-    }
-
+    if (error) return { success: false, error: translateError(error.message) };
+    if (data.user && !data.session) return { success: true };
     return { success: true };
   }
 
@@ -101,7 +101,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> {
-    if (!isSupabaseConfigured) return { success: false, error: SUPABASE_MISSING_ERROR };
     if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
     if (!password) return { success: false, error: "La contraseña es obligatoria." };
 
@@ -110,15 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
 
-    if (error) {
-      if (error.message.includes("Invalid login") || error.message.includes("invalid_credentials")) {
-        return { success: false, error: "Correo o contraseña incorrectos." };
-      }
-      if (error.message.includes("Email not confirmed")) {
-        return { success: false, error: "Debes confirmar tu correo antes de iniciar sesión." };
-      }
-      return { success: false, error: error.message };
-    }
+    if (error) return { success: false, error: translateError(error.message) };
     return { success: true };
   }
 
@@ -129,7 +120,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
-    if (!isSupabaseConfigured) return { success: false, error: SUPABASE_MISSING_ERROR };
     if (!email.trim()) return { success: false, error: "El correo es obligatorio." };
 
     const { error } = await supabase.auth.resetPasswordForEmail(
@@ -137,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       { redirectTo: "https://finze-help-fin-help.vercel.app/update-password" }
     );
 
-    if (error) return { success: false, error: error.message };
+    if (error) return { success: false, error: translateError(error.message) };
     return { success: true };
   }
 
@@ -148,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
-    if (error) return { success: false, error: error.message };
+    if (error) return { success: false, error: translateError(error.message) };
 
     setIsRecoverySession(false);
     return { success: true };

@@ -1,0 +1,112 @@
+Necesito que hagas una revisión completa del proyecto y corrijas todos los errores existentes. No quiero soluciones temporales ni ocultar errores con mensajes personalizados. Quiero que encuentres la causa raíz y la soluciones.
+
+## 1. Autenticación con Supabase
+
+Actualmente existen problemas con:
+
+- Registro de usuarios.
+- Inicio de sesión.
+- Recuperación de contraseña.
+- Restablecimiento de contraseña.
+
+Revisa completamente la integración con Supabase.
+
+Verifica:
+
+- createClient()
+- Variables VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY
+- import.meta.env
+- flujo de autenticación
+- URLs de redirección
+- recuperación de contraseña
+- sesión
+- manejo de errores
+- funcionamiento en producción (Vercel)
+
+El objetivo es que funcionen correctamente:
+
+✅ Registro
+✅ Inicio de sesión
+✅ Cerrar sesión
+✅ Recuperación de contraseña
+✅ Cambio de contraseña desde el enlace enviado al correo
+
+No quiero mensajes personalizados ocultando el error. Corrige el problema real.
+
+--------------------------------------------------------
+
+## 2. Biblioteca
+
+Actualmente la biblioteca solamente muestra tarjetas con un resumen.
+
+Quiero convertirla en una biblioteca educativa completa.
+
+Cuando el usuario haga clic en "Leer" o en cualquier parte de la tarjeta, debe abrirse una página independiente (no un modal) con el contenido completo del artículo.
+
+Cada artículo debe incluir:
+
+- título
+- categoría
+- nivel
+- tiempo de lectura
+- fecha de actualización
+- contenido completo
+- ejemplos
+- consejos prácticos
+- puntos importantes
+- resumen final
+- botón para volver a la biblioteca
+
+Quiero que escribas contenido real, útil y educativo para todos los artículos existentes.
+
+No quiero textos de prueba ni Lorem Ipsum.
+
+--------------------------------------------------------
+
+## 3. Mejorar la experiencia
+
+Haz que toda la aplicación se sienta como un producto profesional.
+
+Revisa:
+
+- navegación
+- rutas
+- responsive
+- errores de TypeScript
+- errores de consola
+- componentes
+- imports
+- rendimiento
+- accesibilidad
+- diseño
+- carga de páginas
+
+Corrige cualquier problema que encuentres.
+
+--------------------------------------------------------
+
+## 4. Revisar producción
+
+Asegúrate de que todo funcione correctamente en Vercel.
+
+Verifica:
+
+- variables de entorno
+- build
+- deploy
+- enlaces
+- autenticación
+- rutas
+- funcionamiento completo
+
+--------------------------------------------------------
+
+Al finalizar quiero un informe indicando:
+
+- qué errores encontraste
+- por qué ocurrían
+- cómo los solucionaste
+- qué archivos modificaste
+- qué mejoras implementaste
+
+No ocultes errores con try/catch innecesarios. Corrige la causa raíz y deja el proyecto listo para producción.
